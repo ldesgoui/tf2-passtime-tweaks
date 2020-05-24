@@ -5,6 +5,7 @@
 #pragma semicolon 1
 #pragma newdecls required
 
+#include <dhooks>
 #include <sdkhooks>
 #include <tf2>
 #include <tf2_stocks>
@@ -36,6 +37,14 @@ void OnPluginStart() {
         if (IsClientInGame(client)) {
             SDKHook(client, SDKHook_OnTakeDamage, Hook_OnTakeDamage);
         }
+    }
+
+    Handle detour_PreventBunnyJumping =
+        DHookCreateFromConf(game_config, "CTFGameMovement::PreventBunnyJumping");
+    if (detour_PreventBunnyJumping == INVALID_HANDLE) {
+        LogMessage("Could not set up detour for CTFGameMovement::PreventBunnyJumping");
+    } else if (!DHookEnableDetour(detour_PreventBunnyJumping, false, Detour_PreventBunnyJumping)) {
+        LogMessage("Coult not detour CTFGameMovement::PreventBunnyJumping");
     }
 }
 
@@ -83,3 +92,5 @@ static Action Hook_OnTakeDamage(int victim, int &attacker, int &inflictor, float
 
     return Plugin_Continue;
 }
+
+static MRESReturn Detour_PreventBunnyJumping(Address self) { return MRES_Supercede; }
