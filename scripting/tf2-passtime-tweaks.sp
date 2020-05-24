@@ -5,7 +5,9 @@
 #pragma semicolon 1
 #pragma newdecls required
 
+#include <sdkhooks>
 #include <tf2>
+#include <tf2_stocks>
 
 // clang-format off
 public
@@ -13,7 +15,7 @@ Plugin myinfo = {
     name = "TF2 Passtime Tweaks",
     author = "twiikuu",
     description = "",
-    version = "0.1.0",
+    version = "0.2.0",
     url = "https://github.com/ldesgoui/tf2-passtime-tweaks"
 };
 // clang-format on
@@ -29,6 +31,12 @@ void OnPluginStart() {
     if (LibraryExists("updater")) {
         OnLibraryAdded("updater");
     }
+
+    for (int client = 1; client <= MaxClients; client++) {
+        if (IsClientInGame(client)) {
+            SDKHook(client, SDKHook_OnTakeDamage, Hook_OnTakeDamage);
+        }
+    }
 }
 
 public
@@ -40,8 +48,37 @@ void OnLibraryAdded(const char[] name) {
 }
 
 public
+void OnClientPutInServer(int client) { SDKHook(client, SDKHook_OnTakeDamage, Hook_OnTakeDamage); }
+
+public
 void TF2_OnConditionAdded(int client, TFCond condition) {
     if (condition == TFCond_PasstimeInterception) {
         ClientCommand(client, "r_screenoverlay \"\"");
     }
+}
+
+static Action Hook_OnTakeDamage(int victim, int &attacker, int &inflictor, float &damage,
+                                int &damage_type) {
+    if (victim == attacker) {
+        float factor = 1.0;
+
+        if (TF2_GetPlayerClass(victim) == TFClass_Soldier) {
+            factor *= FindConVar("tf_damagescale_self_soldier").FloatValue;
+        }
+
+        if (TF2_IsPlayerInCondition(victim, TFCond_Ubercharged) ||
+            TF2_IsPlayerInCondition(victim, TFCond_PasstimeInterception)) {
+            factor *= 0.0;
+        }
+
+        SetEntityHealth(victim, GetClientHealth(victim) + RoundFloat(damage * factor));
+
+        return Plugin_Continue;
+    }
+
+    if (damage_type & DMG_FALL) {
+        return Plugin_Stop;
+    }
+
+    return Plugin_Continue;
 }

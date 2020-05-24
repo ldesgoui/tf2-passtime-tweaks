@@ -3,6 +3,8 @@
 ## Features
 
 - Removes the obnoxious overlay of TF_COND_PASSTIME_INTERCEPTION
+- Removes self-damage
+- Removes fall damage
 
 ## Installation
 
