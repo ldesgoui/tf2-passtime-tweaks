@@ -16,7 +16,7 @@ Plugin myinfo = {
     name = "TF2 Passtime Tweaks",
     author = "twiikuu",
     description = "",
-    version = "0.2.0",
+    version = "0.3.0",
     url = "https://github.com/ldesgoui/tf2-passtime-tweaks"
 };
 // clang-format on
