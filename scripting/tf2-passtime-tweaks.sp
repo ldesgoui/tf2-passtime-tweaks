@@ -62,7 +62,8 @@ static Action Hook_OnTakeDamage(int victim, int &attacker, int &inflictor, float
     if (victim == attacker) {
         float factor = 1.0;
 
-        if (TF2_GetPlayerClass(victim) == TFClass_Soldier) {
+        if (TF2_GetPlayerClass(victim) == TFClass_Soldier &&
+            !(GetEntityFlags(victim) & FL_ONGROUND)) {
             factor *= FindConVar("tf_damagescale_self_soldier").FloatValue;
         }
 
