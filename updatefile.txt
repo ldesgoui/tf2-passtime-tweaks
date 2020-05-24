@@ -1,0 +1,16 @@
+"Updater" {
+	"Information" {
+		"Version" {
+			"Latest" "0.1.0"
+		}
+
+		"Notes" "Patch notes: https://github.com/ldesgoui/tf2-passtime-tweaks/releases"
+	}
+
+	"Files" {
+		"Plugin" "Path_SM/plugins/tf2-passtime-tweaks.smx"
+		"Plugin" "Path_SM/gamedata/tf2-passtime-tweaks.games.txt"
+
+		"Source" "Path_SM/scripting/tf2-passtime-tweaks.sp"
+	}
+}
