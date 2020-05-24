@@ -6,6 +6,7 @@
 #pragma newdecls required
 
 #include <dhooks>
+#include <halflife>
 #include <sdkhooks>
 #include <tf2>
 #include <tf2_stocks>
@@ -16,10 +17,12 @@ Plugin myinfo = {
     name = "TF2 Passtime Tweaks",
     author = "twiikuu",
     description = "",
-    version = "0.3.0",
+    version = "0.4.0",
     url = "https://github.com/ldesgoui/tf2-passtime-tweaks"
 };
 // clang-format on
+
+int g_current_carrier = -1;
 
 public
 void OnPluginStart() {
@@ -38,6 +41,9 @@ void OnPluginStart() {
             SDKHook(client, SDKHook_OnTakeDamage, Hook_OnTakeDamage);
         }
     }
+
+    HookEvent("pass_get", Event_PassGet);
+    HookEvent("pass_free", Event_PassFree);
 
     Handle detour_PreventBunnyJumping =
         DHookCreateFromConf(game_config, "CTFGameMovement::PreventBunnyJumping");
@@ -89,6 +95,20 @@ static Action Hook_OnTakeDamage(int victim, int &attacker, int &inflictor, float
     if (damage_type & DMG_FALL) {
         return Plugin_Stop;
     }
+
+    return Plugin_Continue;
+}
+
+static Action Event_PassGet(Event event, const char[] name, bool dont_broadcast) {
+    g_current_carrier = event.GetInt("owner");
+
+    PrintCenterText(g_current_carrier, "GOT THE JACK");
+
+    return Plugin_Continue;
+}
+
+static Action Event_PassFree(Event event, const char[] name, bool dont_broadcast) {
+    g_current_carrier = -1;
 
     return Plugin_Continue;
 }
